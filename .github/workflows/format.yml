@@ -41,7 +41,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         run: |
-          # PRの差分を取得（最大10ファイルまで）
           DIFF=$(gh pr diff ${{ github.event.pull_request.number }} | head -c 50000)
           
           # 差分をファイルに保存（JSON用にエスケープ）
@@ -93,7 +92,6 @@ jobs:
           # APIレスポンスからsummaryを取り出してMarkdownファイルを作成
           jq -r .summary response.txt > comment.md
           
-          # MarkdownファイルをPRにコメント
           echo "## 🤖 Code Review API Response" > body.md
           echo "" >> body.md
           cat comment.md >> body.md
