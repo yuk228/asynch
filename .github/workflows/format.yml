@@ -62,8 +62,8 @@ jobs:
           fi
           echo "API_URL length: ${#API_URL}"
 
-          # APIにPOSTリクエストを送信し、ステータスコードとボディを取得
-          HTTP_STATUS=$(curl -s -w "%{http_code}" -X POST \
+          # APIにPOSTリクエストを送信し、ステータスコードとボディを取得（デバッグ用に -v を使用）
+          HTTP_STATUS=$(curl -v -w "%{http_code}" -X POST \
             -H "Content-Type: application/json" \
             -d @payload.json \
             -o response.txt \
