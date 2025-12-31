@@ -1,3 +1,1 @@
-export function createNextPath() {
-    
-}
+export function createNextPath() {}
