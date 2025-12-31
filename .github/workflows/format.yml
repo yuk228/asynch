@@ -58,7 +58,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d @payload.json \
             -o response.txt \
-            "https://z1waaaafg5.execute-api.ap-northeast-1.amazonaws.com/prod")
+            "https://ob9w5led7a.execute-api.ap-northeast-1.amazonaws.com/prod")
           
           echo "API Response Status: $HTTP_STATUS"
           cat response.txt
