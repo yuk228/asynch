@@ -52,13 +52,22 @@ jobs:
 
       - name: Send to API
         id: api-request
+        env:
+          API_URL: ${{ secrets.API_URL }}
         run: |
+          # URL変数のチェック（値の中身は出さずにチェック）
+          if [ -z "$API_URL" ]; then
+            echo "Error: API_URL secret is empty or not set."
+            exit 1
+          fi
+          echo "API_URL length: ${#API_URL}"
+
           # APIにPOSTリクエストを送信し、ステータスコードとボディを取得
           HTTP_STATUS=$(curl -s -w "%{http_code}" -X POST \
             -H "Content-Type: application/json" \
             -d @payload.json \
             -o response.txt \
-            "${{ secrets.API_URL }}")
+            "$API_URL")
           
           echo "API Response Status: $HTTP_STATUS"
           cat response.txt
