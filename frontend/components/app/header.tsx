@@ -18,7 +18,6 @@ import Link from 'next/link'
 import { LuBell } from 'react-icons/lu'
 import { LinkButton } from '../shared/link-button'
 import { IconButton } from '@chakra-ui/react'
-import React from 'react'
 
 const MENU_ITEMS = [
   { value: 'profile', label: 'プロフィール', href: '/account/profile' },
@@ -122,3 +121,5 @@ export function NotificationButton() {
     </Menu.Root>
   )
 }
+
+export function SearchBar() {}
