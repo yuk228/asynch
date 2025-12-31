@@ -23,3 +23,77 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Apply Prettier Change
+  Summary:
+    if: always()
+    needs: prettier
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        id: get-diff
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        run: |
+          DIFF=$(gh pr diff ${{ github.event.pull_request.number }} | head -c 50000)
+          
+          # 差分をファイルに保存（JSON用にエスケープ）
+          echo "$DIFF" > diff.txt
+          
+          # JSONペイロードを作成
+          jq -n --rawfile content diff.txt '{content: $content}' > payload.json
+
+      - name: Send to API
+        id: api-request
+        env:
+          API_URL: ${{ secrets.API_URL }}
+        run: |
+          # URL変数のチェック（値の中身は出さずにチェック）
+          if [ -z "$API_URL" ]; then
+            echo "Error: API_URL secret is empty or not set."
+            exit 1
+          fi
+          echo "API_URL length: ${#API_URL}"
+
+          # APIにPOSTリクエストを送信し、ステータスコードとボディを取得（デバッグ用に -v を使用）
+          HTTP_STATUS=$(curl -v -w "%{http_code}" -X POST \
+            -H "Content-Type: application/json" \
+            -d @payload.json \
+            -o response.txt \
+            "$API_URL")
+          
+          echo "API Response Status: $HTTP_STATUS"
+          cat response.txt
+          
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Error: API request failed with status $HTTP_STATUS"
+            exit 1
+          fi
+          
+          # GitHub Actionsの出力として設定
+          {
+            echo "response<<EOF"
+            cat response.txt
+            echo ""
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Comment on PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        if: steps.api-request.outputs.response != ''
+        run: |
+          # APIレスポンスからsummaryを取り出してMarkdownファイルを作成
+          jq -r .summary response.txt > comment.md
+          
+          echo "## 🤖 Code Review API Response" > body.md
+          echo "" >> body.md
+          cat comment.md >> body.md
+          
+          gh pr comment ${{ github.event.pull_request.number }} --body-file body.md
