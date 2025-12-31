@@ -58,7 +58,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d @payload.json \
             -o response.txt \
-            "${{ vars.API_URL }}")
+            "${{ secrets.API_URL }}")
           
           echo "API Response Status: $HTTP_STATUS"
           cat response.txt
