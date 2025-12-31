@@ -1,0 +1,164 @@
+Resources:
+  GASummaryLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: GASummaryCombinedPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "autoscaling:Describe*"
+                  - "cloudwatch:*"
+                  - "logs:*"
+                  - "sns:*"
+                  - "iam:GetPolicy"
+                  - "iam:GetPolicyVersion"
+                  - "iam:GetRole"
+                  - "oam:ListSinks"
+                Resource: "*"
+              - Effect: Allow
+                Action: "iam:CreateServiceLinkedRole"
+                Resource: "arn:aws:iam::*:role/aws-service-role/events.amazonaws.com/AWSServiceRoleForCloudWatchEvents*"
+                Condition:
+                  StringLike:
+                    "iam:AWSServiceName": "events.amazonaws.com"
+              - Effect: Allow
+                Action:
+                  - "oam:ListAttachedLinks"
+                Resource: "arn:aws:oam:*:*:sink/*"
+              - Effect: Allow
+                Action:
+                  - "bedrock:InvokeModel"
+                  - "bedrock:InvokeModelWithResponseStream"
+                  - "bedrock:Converse"
+                Resource:
+                  - "arn:aws:bedrock:*::foundation-model/*"
+                  - "arn:aws:bedrock:*:*:inference-profile/*"
+              - Effect: Allow
+                Action:
+                  - "aws-marketplace:ViewSubscriptions"
+                  - "aws-marketplace:Subscribe"
+                Resource: "*"
+
+  GASummaryFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: GA-Summary-Reviewer
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Role: !GetAtt GASummaryLambdaRole.Arn
+      Timeout: 29
+      Code:
+        ZipFile: |
+          const { BedrockRuntimeClient, ConverseCommand } = require("@aws-sdk/client-bedrock-runtime");
+          const client = new BedrockRuntimeClient({ region: "us-east-1" });
+          const modelId = "amazon.nova-pro-v1:0";
+
+          exports.handler = async (event) => {
+            console.log("Received event:", JSON.stringify(event));
+            try {
+              let content = "";
+              if (event.body) {
+                try {
+                  const body = JSON.parse(event.body);
+                  content = body.content || "";
+                } catch (pe) {
+                  console.error("JSON Parse Error:", pe);
+                  content = event.body; // Fallback to raw body
+                }
+              }
+
+              if (!content) {
+                return {
+                  statusCode: 400,
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ error: "Empty content in request body" })
+                };
+              }
+
+              const inputText = `このプルリクエストの内容を解析して、「ばり重要」(P0)「むっちゃ重要」(P1)「みとけ」(Other)にわけてレビューしてください。そのあと人間がレビューするときの項目も表示してください。変更内容が確認できるパスがある場合そのパスも教えてください\n${content}`;
+              
+              const request = {
+                modelId,
+                messages: [{
+                  role: "user",
+                  content: [{ text: inputText }]
+                }],
+                inferenceConfig: {
+                  maxTokens: 5000,
+                  temperature: 0.5,
+                }
+              };
+
+              const response = await client.send(new ConverseCommand(request));
+              const modelOutputText = response.output.message.content[0].text;
+
+              return {
+                statusCode: 200,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ summary: modelOutputText })
+              };
+            } catch (err) {
+              console.error("ERROR:", err);
+              return {
+                statusCode: 500,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                  error: "Lambda execution failed", 
+                  details: err.message 
+                })
+              };
+            }
+          };
+  GASummaryRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: GA-Summary-API
+      Description: API for GA Summary Reviewer
+
+  GASummaryPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: POST
+      ResourceId: !GetAtt GASummaryRestApi.RootResourceId
+      RestApiId: !Ref GASummaryRestApi
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GASummaryFunction.Arn}/invocations
+
+  GASummaryDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: GASummaryPostMethod
+    Properties:
+      RestApiId: !Ref GASummaryRestApi
+
+  GASummaryStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      StageName: prod
+      RestApiId: !Ref GASummaryRestApi
+      DeploymentId: !Ref GASummaryDeployment
+
+  GASummaryLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref GASummaryFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GASummaryRestApi}/*
+
+Outputs:
+  ApiUrl:
+    Description: URL of the API Gateway stage
+    Value: !Sub https://${GASummaryRestApi}.execute-api.${AWS::Region}.amazonaws.com/prod/
