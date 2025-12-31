@@ -48,7 +48,7 @@ jobs:
           echo "$DIFF" > diff.txt
           
           # JSONペイロードを作成
-          jq -n --rawfile diff diff.txt '{diff: $diff}' > payload.json
+          jq -n --rawfile content diff.txt '{content: $content}' > payload.json
 
       - name: Send to API
         id: api-request
