@@ -1,0 +1,12 @@
+PR時発火
+--- Github Actions
+ファイル差分を取得
+AIAPIに送信
+------ API&AI
+AIにリクエストを投げる
+mermaidで取得
+AIのresをレスポンスする
+------
+対象PRにコメントする
+終了
+---
