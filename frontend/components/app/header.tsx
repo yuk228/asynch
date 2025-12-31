@@ -10,60 +10,135 @@ import {
   HStack,
   Menu,
   Text,
-  Spacer,
   Separator,
   Input,
+  IconButton,
+  Group,
 } from '@chakra-ui/react'
 import Link from 'next/link'
-import { LuBell } from 'react-icons/lu'
+import {
+  LuBell,
+  LuSearch,
+  LuUser,
+  LuLogOut,
+  LuLayoutDashboard,
+  LuHeart,
+} from 'react-icons/lu'
 import { LinkButton } from '../shared/link-button'
-import { IconButton } from '@chakra-ui/react'
 
 const MENU_ITEMS = [
-  { value: 'profile', label: 'プロフィール', href: '/account/profile' },
-  { value: 'articles', label: '記事一覧', href: '/dashboard/articles' },
-  { value: 'likes', label: 'いいねした記事', href: '/dashboard/likes' },
+  {
+    value: 'profile',
+    label: 'プロフィール',
+    href: '/account/profile',
+    icon: <LuUser />,
+  },
+  {
+    value: 'articles',
+    label: '記事一覧',
+    href: '/dashboard/articles',
+    icon: <LuLayoutDashboard />,
+  },
+  {
+    value: 'likes',
+    label: 'いいねした記事',
+    href: '/dashboard/likes',
+    icon: <LuHeart />,
+  },
 ]
 
 export function Header() {
   return (
-    <Box as="header" borderBottomWidth="1px" py="4" bg="bg.panel">
+    <Box
+      as="header"
+      borderBottomWidth="1px"
+      py="2"
+      bg="bg.panel"
+      position="sticky"
+      top="0"
+      zIndex="sticky"
+    >
       <Container maxW="container.xl">
-        <Flex align="center" gap="4">
-          <Link
-            href="/"
-            passHref
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            <Heading size="lg" letterSpacing="tight" cursor="pointer">
-              Asynch
-            </Heading>
-          </Link>
-
-          <Spacer />
-          <Input placeholder="キーワードを入力..." />
-
-          <Flex align="center" gap="4">
-            <ColorModeToggle />
-            <NotificationButton />
+        <Flex align="center" justify="space-between" h="12">
+          <HStack gap="4" flex="1">
+            <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Heading
+                size="md"
+                fontWeight="bold"
+                letterSpacing="tighter"
+                cursor="pointer"
+              >
+                Asynch
+              </Heading>
+            </Link>
+          </HStack>
+          <HStack gap="3" flex="1" justify="flex-end">
+            <HStack gap="1">
+              <ColorModeToggle />
+              <NotificationButton />
+              <LinkButton
+                href="/search"
+                variant="ghost"
+                size="sm"
+                aria-label="search"
+              >
+                <LuSearch size="16" />
+              </LinkButton>
+            </HStack>
+            <Separator orientation="vertical" h="6" />
             <AvatarButton />
-            <LinkButton href="/articles/new">執筆する</LinkButton>
-          </Flex>
+            <LinkButton href="/articles/new" size="sm" variant="solid">
+              執筆する
+            </LinkButton>
+          </HStack>
         </Flex>
       </Container>
     </Box>
   )
 }
 
-export function AvatarButton() {
+function NotificationButton() {
   return (
-    <Menu.Root>
+    <Menu.Root positioning={{ placement: 'bottom-end' }}>
       <Menu.Trigger asChild>
-        <HStack cursor="pointer" gap="2">
-          <Avatar.Root size="sm">
+        <IconButton variant="ghost" size="sm" aria-label="Notifications">
+          <LuBell />
+        </IconButton>
+      </Menu.Trigger>
+      <Menu.Positioner>
+        <Menu.Content minW="240px" p="2">
+          <Box px="2" py="1">
+            <Text fontWeight="bold" fontSize="xs" color="fg.muted">
+              通知
+            </Text>
+          </Box>
+          <Separator my="1" />
+          <Box px="2" py="2">
+            <Text fontSize="sm">通知はありません</Text>
+          </Box>
+        </Menu.Content>
+      </Menu.Positioner>
+    </Menu.Root>
+  )
+}
+
+function AvatarButton() {
+  return (
+    <Menu.Root positioning={{ placement: 'bottom-end' }}>
+      <Menu.Trigger asChild>
+        <HStack
+          cursor="pointer"
+          gap="2"
+          p="1"
+          borderRadius="full"
+          _hover={{ bg: 'bg.muted' }}
+        >
+          <Avatar.Root size="xs">
             <Avatar.Fallback>U</Avatar.Fallback>
           </Avatar.Root>
-          <Text>User</Text>
+          <Text fontSize="sm" fontWeight="medium" hideBelow="md">
+            User
+          </Text>
         </HStack>
       </Menu.Trigger>
       <Menu.Positioner>
@@ -75,51 +150,28 @@ export function AvatarButton() {
               asChild
               cursor="pointer"
             >
-              <Link href={item.href}>{item.label}</Link>
+              <Link href={item.href}>
+                <HStack gap="2">
+                  {item.icon}
+                  {item.label}
+                </HStack>
+              </Link>
             </Menu.Item>
           ))}
           <Separator my="1" />
           <Menu.Item
             value="logout"
             color="fg.error"
-            _hover={{ bg: 'bg.error', color: 'fg.error' }}
+            _hover={{ bg: 'bg.error', color: 'white' }}
             cursor="pointer"
           >
-            ログアウト
+            <HStack gap="2">
+              <LuLogOut />
+              ログアウト
+            </HStack>
           </Menu.Item>
         </Menu.Content>
       </Menu.Positioner>
     </Menu.Root>
   )
 }
-
-export function NotificationButton() {
-  return (
-    <Menu.Root>
-      <Menu.Trigger asChild>
-        <HStack cursor="pointer" gap="2">
-          <IconButton variant="ghost">
-            <LuBell />
-          </IconButton>
-        </HStack>
-      </Menu.Trigger>
-      <Menu.Positioner>
-        <Menu.Content minW="150px" p="1">
-          <Text>＊＊さんがあなたをフォローしました。</Text>
-          <Separator my="1" />
-          <Text>＊＊さんがあなたをフォローしました。</Text>
-          {/* {MENU_ITEMS.map((item) => (
-            <React.Fragment key={item.value}>
-              <Menu.Item value={item.value} asChild cursor="pointer">
-                <Link href={item.href}>{item.label}</Link>
-              </Menu.Item>
-              <Separator my="1" />
-            </React.Fragment>
-          ))} */}
-        </Menu.Content>
-      </Menu.Positioner>
-    </Menu.Root>
-  )
-}
-
-export function SearchBar() {}
