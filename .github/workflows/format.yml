@@ -23,3 +23,56 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Apply Prettier Change
+  Summary:
+    if: always()
+    needs: prettier
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        id: get-diff
+        env:
+          GH_TOKEN: $ secrets.GITHUB_TOKEN 
+        run: |
+          # PRの差分を取得（最大10ファイルまで）
+          DIFF=$(gh pr diff $ github.event.pull_request.number  | head -c 50000)
+          
+          # 差分をファイルに保存（JSON用にエスケープ）
+          echo "$DIFF" > diff.txt
+          
+          # JSONペイロードを作成
+          jq -n --rawfile diff diff.txt '{diff: $diff}' > payload.json
+
+      - name: Send to API
+        id: api-request
+        run: |
+          # APIにPOSTリクエストを送信
+          RESPONSE=$(curl -s -X POST \
+            -H "Content-Type: application/json" \
+            -d @payload.json \
+            "https://z1waaaafg5.execute-api.ap-northeast-1.amazonaws.com/prod")
+          
+          # レスポンスをファイルに保存
+          echo "$RESPONSE" > response.txt
+          
+          # GitHub Actionsの出力として設定
+          echo "response<<EOF" >> $GITHUB_OUTPUT
+          echo "$RESPONSE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR
+        env:
+          GH_TOKEN: $ secrets.GITHUB_TOKEN 
+        run: |
+          # APIレスポンスをPRにコメント
+          gh pr comment $ github.event.pull_request.number  --body "## 🤖 Code Review API Response
+
+          \`\`\`
+          $(cat response.txt)
+          \`\`\`
+          "
+
