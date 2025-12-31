@@ -69,17 +69,24 @@ jobs:
           fi
           
           # GitHub Actionsの出力として設定
-          echo "response<<EOF" >> $GITHUB_OUTPUT
-          cat response.txt >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          {
+            echo "response<<EOF"
+            cat response.txt
+            echo ""
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Comment on PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         if: steps.api-request.outputs.response != ''
         run: |
-          # APIレスポンスをPRにコメント
-          gh pr comment ${{ github.event.pull_request.number }} --body "## 🤖 Code Review API Response
+          # APIレスポンスからsummaryを取り出してMarkdownファイルを作成
+          jq -r .summary response.txt > comment.md
           
-          $(cat response.txt)
-          "
+          # MarkdownファイルをPRにコメント
+          echo "## 🤖 Code Review API Response" > body.md
+          echo "" >> body.md
+          cat comment.md >> body.md
+          
+          gh pr comment ${{ github.event.pull_request.number }} --body-file body.md
