@@ -1,0 +1,276 @@
+# ============================================
+# FRONTEND (Next.js)
+# ============================================
+
+# Dependencies
+frontend/node_modules/
+frontend/.pnp
+frontend/.pnp.js
+frontend/.yarn/install-state.gz
+frontend/.yarn/cache
+frontend/.yarn/unplugged
+frontend/.yarn/build-state.yml
+frontend/.pnpm-store
+
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/.swc/
+
+# Production
+frontend/build/
+frontend/dist/
+
+# Environment variables
+frontend/.env
+frontend/.env*.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Testing
+frontend/coverage/
+frontend/.nyc_output
+frontend/test-results/
+frontend/playwright-report/
+frontend/.playwright/
+
+# Cache
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/.eslintcache
+frontend/.stylelintcache
+
+# TypeScript
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnpm-debug.log*
+
+# Storybook
+frontend/.out
+frontend/.storybook-out
+frontend/storybook-static
+
+# PWA
+frontend/**/sw.js
+frontend/**/workbox-*.js
+
+# ============================================
+# BACKEND (Python FastAPI)
+# ============================================
+
+# Python
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.py[cod]
+backend/**/*.py[cod]
+backend/*$py.class
+backend/**/*.$py.class
+backend/*.so
+
+# Distribution / packaging
+backend/.Python
+backend/build/
+backend/develop-eggs/
+backend/dist/
+backend/downloads/
+backend/eggs/
+backend/.eggs/
+backend/lib/
+backend/lib64/
+backend/parts/
+backend/sdist/
+backend/var/
+backend/wheels/
+backend/share/python-wheels/
+backend/*.egg-info/
+backend/.installed.cfg
+backend/*.egg
+backend/MANIFEST
+
+# PyInstaller
+backend/*.manifest
+backend/*.spec
+
+# Unit test / coverage reports
+backend/htmlcov/
+backend/.tox/
+backend/.nox/
+backend/.coverage
+backend/.coverage.*
+backend/.cache
+backend/nosetests.xml
+backend/coverage.xml
+backend/*.cover
+backend/*.py,cover
+backend/.hypothesis/
+backend/.pytest_cache/
+backend/cover/
+
+# Environment variables
+backend/.env
+backend/.env.*
+backend/.venv
+backend/env/
+backend/venv/
+backend/ENV/
+backend/env.bak/
+backend/venv.bak/
+
+# FastAPI specific
+backend/alembic/versions/*.py
+!backend/alembic/versions/__init__.py
+backend/.alembic/
+
+# Database
+backend/*.db
+backend/*.sqlite
+backend/*.sqlite3
+backend/db.sqlite3
+backend/db.sqlite3-journal
+
+# Logs
+backend/*.log
+backend/logs/
+
+# mypy
+backend/.mypy_cache/
+backend/.dmypy.json
+backend/dmypy.json
+
+# Pyre type checker
+backend/.pyre/
+
+# pytype static type analyzer
+backend/.pytype/
+
+# Cython debug symbols
+backend/cython_debug/
+
+# PyCharm
+backend/.idea/
+
+# Jupyter Notebook
+backend/.ipynb_checkpoints
+
+# IPython
+backend/profile_default/
+backend/ipython_config.py
+
+# ============================================
+# SHARED / GLOBAL
+# ============================================
+
+# Environment variables (root level)
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# IDE / Editor
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Temporary folders
+tmp/
+temp/
+.tmp/
+.temp/
+
+# Security files
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+auth.json
+credentials.json
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+.docker/
+
+# Deployment
+.vercel
+.netlify
+.firebase
+.surge
+deploy.log
+
+# Monitoring
+.sentry/
+.lighthouseci/
+
+# Performance
+.clinic/
+.0x/
+
+# Generated files
+CHANGELOG.md
+.next-sitemap.xml
+sitemap*.xml
+robots.txt.generated
+
+# Package manager files (optional - uncomment if needed)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ============================================
+# PROJECT SPECIFIC
+# ============================================
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads
+uploads/
+public/uploads/
+storage/
+media/
+
+# Custom project files
+docker/mysql/initdb.d/
+docker/rabbitmq/cert/
+teams-bot.zip
+
+# Documentation
+docs/_build/
+.docusaurus/
+
+# Backups
+*.backup
+*.bak
+*.orig
