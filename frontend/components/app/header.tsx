@@ -53,7 +53,7 @@ export function Header() {
       as="header"
       borderBottomWidth="1px"
       py="2"
-      bg={{ base: "whiteAlpha.700", _dark: "blackAlpha.700" }}
+      bg={{ base: 'whiteAlpha.700', _dark: 'blackAlpha.700' }}
       backdropFilter="saturate(180%) blur(20px)"
       position="sticky"
       top="0"

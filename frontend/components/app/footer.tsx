@@ -50,14 +50,26 @@ const DEVELOPERS = [
     name: 'Rune',
     links: [
       { label: 'Twitter', icon: <LuTwitter />, href: 'https://x.com/pgdgggw' },
-      { label: 'GitHub', icon: <LuGithub />, href: 'https://github.com/yuk228' },
+      {
+        label: 'GitHub',
+        icon: <LuGithub />,
+        href: 'https://github.com/yuk228',
+      },
     ],
   },
   {
     name: 'zatunohito',
     links: [
-      { label: 'Twitter', icon: <LuTwitter />, href: 'https://x.com/zatunohitori' },
-      { label: 'GitHub', icon: <LuGithub />, href: 'https://github.com/zatusub' },
+      {
+        label: 'Twitter',
+        icon: <LuTwitter />,
+        href: 'https://x.com/zatunohitori',
+      },
+      {
+        label: 'GitHub',
+        icon: <LuGithub />,
+        href: 'https://github.com/zatusub',
+      },
     ],
   },
 ]
@@ -105,8 +117,14 @@ export function Footer() {
                     Asynch
                   </Heading>
                 </HStack>
-                <Text color="fg.muted" fontSize="md" lineHeight="relaxed" maxW="sm">
-                  非同期コミュニケーションのための<br />
+                <Text
+                  color="fg.muted"
+                  fontSize="md"
+                  lineHeight="relaxed"
+                  maxW="sm"
+                >
+                  非同期コミュニケーションのための
+                  <br />
                   新しいプラットフォーム。
                 </Text>
               </Stack>
@@ -114,12 +132,22 @@ export function Footer() {
               <Stack gap="4" mt={{ base: '8', lg: 'auto' }}>
                 {DEVELOPERS.map((dev) => (
                   <Box key={dev.name}>
-                    <Text fontSize="xs" fontWeight="semibold" color="fg.subtle" mb="1">
+                    <Text
+                      fontSize="xs"
+                      fontWeight="semibold"
+                      color="fg.subtle"
+                      mb="1"
+                    >
                       Connect with {dev.name}
                     </Text>
                     <HStack gap="1">
                       {dev.links.map((link) => (
-                        <SocialButton key={link.label} icon={link.icon} href={link.href} label={link.label} />
+                        <SocialButton
+                          key={link.label}
+                          icon={link.icon}
+                          href={link.href}
+                          label={link.label}
+                        />
                       ))}
                     </HStack>
                   </Box>
@@ -142,7 +170,10 @@ export function Footer() {
                     bg={{ base: 'whiteAlpha.500', _dark: 'blackAlpha.500' }}
                     backdropFilter="blur(12px)"
                     borderWidth="1px"
-                    borderColor={{ base: 'blackAlpha.50', _dark: 'whiteAlpha.100' }}
+                    borderColor={{
+                      base: 'blackAlpha.50',
+                      _dark: 'whiteAlpha.100',
+                    }}
                     borderRadius="2xl"
                     p="6"
                   >
@@ -155,7 +186,10 @@ export function Footer() {
                           key={linkIdx}
                           href={link.href}
                           color="fg.muted"
-                          _hover={{ color: 'fg.default', textDecoration: 'none' }}
+                          _hover={{
+                            color: 'fg.default',
+                            textDecoration: 'none',
+                          }}
                           fontSize="sm"
                           fontWeight="medium"
                           transition="color 0.2s"
@@ -184,8 +218,12 @@ export function Footer() {
                   gap="4"
                 >
                   <Box>
-                    <Text fontWeight="bold" fontSize="md">Stay updated</Text>
-                    <Text fontSize="sm" color="fg.muted">最新のアップデート情報をお届けします。</Text>
+                    <Text fontWeight="bold" fontSize="md">
+                      Stay updated
+                    </Text>
+                    <Text fontSize="sm" color="fg.muted">
+                      最新のアップデート情報をお届けします。
+                    </Text>
                   </Box>
                   <IconButton
                     aria-label="Subscribe"
@@ -212,10 +250,16 @@ export function Footer() {
           color="fg.muted"
           fontSize="xs"
         >
-          <Text>© {new Date().getFullYear()} Asynch Inc. All rights reserved.</Text>
+          <Text>
+            © {new Date().getFullYear()} Asynch Inc. All rights reserved.
+          </Text>
           <HStack gap="6">
-            <Link href="#" _hover={{ color: 'fg.default' }}>Privacy Policy</Link>
-            <Link href="#" _hover={{ color: 'fg.default' }}>Terms of Service</Link>
+            <Link href="#" _hover={{ color: 'fg.default' }}>
+              Privacy Policy
+            </Link>
+            <Link href="#" _hover={{ color: 'fg.default' }}>
+              Terms of Service
+            </Link>
           </HStack>
         </Flex>
       </Container>
@@ -223,7 +267,15 @@ export function Footer() {
   )
 }
 
-function SocialButton({ icon, href, label }: { icon: React.ReactNode; href: string; label: string }) {
+function SocialButton({
+  icon,
+  href,
+  label,
+}: {
+  icon: React.ReactNode
+  href: string
+  label: string
+}) {
   return (
     <IconButton
       asChild
@@ -233,13 +285,18 @@ function SocialButton({ icon, href, label }: { icon: React.ReactNode; href: stri
         bg: 'whiteAlpha.800',
         color: 'fg.default',
         transform: 'translateY(-2px)',
-        _dark: { bg: 'blackAlpha.800' }
+        _dark: { bg: 'blackAlpha.800' },
       }}
       transition="all 0.2s"
       size="sm"
       rounded="full"
     >
-      <a href={href} aria-label={label} target="_blank" rel="noopener noreferrer">
+      <a
+        href={href}
+        aria-label={label}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         {icon}
       </a>
     </IconButton>
